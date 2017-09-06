@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--基于dao和TestUser实现的mapper文件配置-->
+<mapper namespace="test">
+    <!--id:statement的唯一标示。一般和namespace命名空间联合使用确定整个项目中该sql语句是唯一的
+    #{}：表示一个占位符.就是jdbc连接中的?占位符一样的
+    parameteType：输入参数的Java类型。可以是基本类型、对象类型、map类型等
+    动态 SQL 是 mybatis 的强大特性之一，也是它优于其他 ORM 框架的一个重要原因。
+    mybatis 在对 sql 语句进行预编译之前，会对 sql 进行动态解析，解析为一个 BoundSql 对象，也是在此处对动态 SQL 进行处理的。
+    在动态 SQL 解析阶段， #{ } 相当于 ?和 ${ } 相当于 +会有不同的表现
+    select * from user where name = #{name}; /select * from user where name = ？;
+    select * from user where name = ${name}; /select * from user where name = "dato"; ${}:这种写法存在sql注入的风险。因为是连接符作用，其中数据原样输出的
+    ${value}:里面的value表示输入参数的名称
+    如果该参数是简单类型的，那么${}里面的参数名称必须是value
+    -->
+    <select id="findUserById" parameterType="int" resultType="entity.User">
+        SELECT * FROM dbgirl.`user` WHERE id =#{id};
+    </select>
+    <select id="findUserById1" parameterType="java.lang.String" resultType="entity.User">
+        select * from dbgirl.`user` WHERE username LIKE #{name}; /*%小明%原样输入*/
+    </select>
+    <select id="findUserById2" parameterType="java.lang.String" resultType="entity.User">
+         select * from dbgirl.`user` WHERE username LIKE '%${value}%';/*小明输入直接*/
+    </select>
+    <insert id="addUser" parameterType="entity.User">
+        INSERT INTO `dbgirl`.`user` (`id`, `username`, `birthday`, `sex`, `address`)
+        VALUES (#{id}, #{username},#{birthday},#{sex},#{address});
+        /*selectKey：查询主键，在标签内需要输入查询主键的sql*/
+        /*order：指定查询主键的sql和insert语句的执行顺序，相当于insert语句来说 */
+        <selectKey keyProperty="id" resultType="int" order="AFTER">/*after是插入后获取*/
+            SELECT LAST_INSERT_ID() /*:该函数是MySQL的函数，获取自增主键的id.该函数必须配合*/
+        </selectKey>
+    </insert>
+</mapper>
+

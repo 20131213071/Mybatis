@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+namespace为mapper接口的全路径
+id对应Mapper接口里方法名
+出参入参对应resultType，parameterType
+-->
+
+<mapper namespace="dao.UserMapper">
+    <select id="findById" parameterType="int" resultType="entity.User">
+        SELECT * FROM dbgirl.`user` WHERE id =#{id};
+    </select>
+    <insert id="insertUser2" parameterType="entity.User">
+        INSERT INTO `dbgirl`.`user` (`id`, `username`, `birthday`, `sex`, `address`)
+        VALUES (#{id}, #{username},#{birthday},#{sex},#{address});
+        <selectKey keyProperty="id"  order="AFTER" resultType="int">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+    </insert>
+
+</mapper>
